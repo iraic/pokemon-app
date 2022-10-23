@@ -86,6 +86,7 @@ export default {
       if (user) {
         this.isLogin = true;
         this.user = user.email;
+        this.$router.replace('/')
       } else {
         this.isLogin = false;
       }

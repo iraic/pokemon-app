@@ -37,12 +37,11 @@ export default {
     methods: {
         login() {
             signInWithEmailAndPassword(auth, this.email, this.pass)
-                .then((userCredential) => {
+                .then(() => {
                     this.$router.replace('/')
                 })
                 .catch((error) => {
-                    const errorCode = error.code;
-                    const errorMessage = error.message;
+                    alert(error.message);
                 });
         }
     }

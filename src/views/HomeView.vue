@@ -2,29 +2,18 @@
   <v-container>
     <v-row class="d-flex justify-center">
       <v-col sm="8" md="6" lg="4">
-        <v-select v-model="select" :hint="`${select.state}, ${select.abbr}`" :items="items" item-title="state"
-          item-value="abbr" label="Select" persistent-hint return-object single-line></v-select>
+        <v-select :loading="pokemonTypesListLoading" v-model="pokemonTypeSelect" label="Tipo de pokemon"
+          :items="pokemonTypesList" item-title="name" item-value="name" clearable>
+        </v-select>
       </v-col>
     </v-row>
     <v-row>
       <v-col xs="12" md="6" lg="9">
         <v-row>
-          <v-col xs="12" md="6" lg="4">
-            <PokeCard />
+          <v-progress-linear indeterminate color="green" :active="pokemonListLoading"></v-progress-linear>
+          <v-col xs="12" md="6" lg="4" v-for="pokemon in pokemonList" :key="pokemon.name">
+            <PokeCard :name="pokemon.name" @selectPokemon="pokemonAdd" @viewPokemonDetail="pokemonShow"/>
           </v-col>
-          <v-col xs="12" md="6" lg="4">
-            <PokeCard />
-          </v-col>
-          <v-col xs="12" md="6" lg="4">
-            <PokeCard />
-          </v-col>
-          <v-col xs="12" md="6" lg="4">
-            <PokeCard />
-          </v-col>
-          <v-col xs="12" md="6" lg="4">
-            <PokeCard />
-          </v-col>
-          
         </v-row>
       </v-col>
       <v-col xs="12" md="6" lg="3">
@@ -37,39 +26,103 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in pokemonsList" :key="item.id">
+            <tr v-for="item in pokemonSelectList" :key="item.id">
               <td>{{ item.name }}</td>
               <td>{{ item.skills }}</td>
               <td>
-                <v-btn color="error" icon="mdi-delete-circle" variant="plain"></v-btn>
+                <v-btn @click="pokemonRemove(item)" color="error" icon="mdi-delete-circle" variant="plain"></v-btn>
               </td>
             </tr>
           </tbody>
         </v-table>
       </v-col>
     </v-row>
+    <v-dialog v-model="pokemonShowDetail" >
+      <PokeDetail :pokemon="pokemonDetail"/>
+      <v-btn color="primary" @click="pokemonShowDetail = false">Cerrar</v-btn>
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
 import PokeCard from '@/components/PokeCard'
+import PokeDetail from '@/components/PokeDetail'
+import pokemonService from '@/store/pokemonService'
 export default {
   name: 'HomeView',
   components: {
-    PokeCard
+    PokeCard,
+    PokeDetail
   },
   data: () => ({
-    select: { state: 'Florida', abbr: 'FL' },
-    items: [
-      { state: 'Florida', abbr: 'FL' },
-      { state: 'Georgia', abbr: 'GA' },
-      { state: 'Nebraska', abbr: 'NE' },
-      { state: 'California', abbr: 'CA' },
-      { state: 'New York', abbr: 'NY' },
-    ],
-    pokemonsList: [
-      { id: 1, name: 'pikachu', skills: 'rayo' },
-    ]
-  })
+    pokemonTypesListLoading: true,
+    pokemonTypesList: [],
+    pokemonTypeSelect: null,
+    pokemonSelectList: [],
+    pokemonListLoading: true,
+    pokemonList: [],
+    pokemonShowDetail: false,
+    pokemonDetail: {}
+  }),
+  methods: {
+    getTypes() {
+      this.pokemonTypesListLoading = true;
+      pokemonService.getTypes()
+        .then((res) => {
+          this.pokemonTypesList = res.data.results;
+        })
+        .finally(() => this.pokemonTypesListLoading = false)
+    },
+    onChagePokemonType() {
+      this.pokemonListLoading = true;
+      if (this.pokemonTypeSelect) {
+        pokemonService.getPokemonByType(this.pokemonTypeSelect)
+          .then((res) => {
+            this.pokemonList = res.data.pokemon.map(pokemon => ({
+              name: pokemon.pokemon.name,
+              url: pokemon.pokemon.url,
+            }))
+          })
+          .finally(() => this.pokemonListLoading = false)
+      } else {
+        pokemonService.getAllPokemon()
+          .then((res) => {
+            this.pokemonList = res.data.results;
+          })
+          .finally(() => this.pokemonListLoading = false)
+      }
+    },
+    pokemonAdd(pokemon){
+      var i = this.pokemonSelectList.find( element => element.name == pokemon.name );
+      if(i == undefined){
+        let skillsText = "";
+        pokemon.skills.forEach(element => {
+          skillsText += element.name + ", ";
+        });
+        pokemon.skills = skillsText;
+        this.pokemonSelectList.push(pokemon);
+      }
+    },
+    pokemonRemove(pokemon){
+      var i = this.pokemonSelectList.indexOf( pokemon );
+      if ( i !== -1 ) {
+        this.pokemonSelectList.splice( i, 1 );
+      }
+    },
+    pokemonShow(pokemon){
+      console.log(pokemon)
+      this.pokemonDetail = pokemon;
+      this.pokemonShowDetail = true;
+    }
+  },
+  created() {
+    this.getTypes();
+    this.onChagePokemonType();
+  },
+  watch: {
+    pokemonTypeSelect() {
+      this.onChagePokemonType();
+    }
+  }
 }
 </script>

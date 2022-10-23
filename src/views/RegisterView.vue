@@ -42,7 +42,7 @@ export default {
     methods: {
         userRegistration() {
             createUserWithEmailAndPassword(auth, this.email, this.pass)
-                .then((res) => {
+                .then(() => {
                     this.$router.replace('/home')
                 })
                 .catch((error) => {

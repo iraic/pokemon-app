@@ -15,12 +15,12 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import(/* webpackChunkName: "about" */ '@/views/LoginView')
+    component: () => import(/* webpackChunkName: "login" */ '@/views/LoginView'),
   },
   {
     path: '/register',
     name: 'register',
-    component: () => import(/* webpackChunkName: "about" */ '@/views/RegisterView')
+    component: () => import(/* webpackChunkName: "register" */ '@/views/RegisterView')
   },
 ]
 
