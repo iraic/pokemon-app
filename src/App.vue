@@ -1,10 +1,16 @@
 <template>
-  <NavBar/>
-  <router-view></router-view>
+  <NavBar />
+  <router-view />
+  <v-layout>
+    <v-footer class="d-flex flex-column">
+      <div class="px-4 py-2 text-center w-100">
+        {{ new Date().getFullYear() }} (c) — <strong>Iraic</strong>
+      </div>
+    </v-footer>
+  </v-layout>
 </template>
 
 <script>
-// @ is an alias to /src
 import NavBar from '@/components/NavBar.vue'
 
 export default {

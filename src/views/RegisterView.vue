@@ -3,7 +3,7 @@
         <v-row class="d-flex justify-center">
             <v-col sm="8" md="6" lg="4">
                 <v-card>
-                    <v-img :src="require('../assets/pokemon.png')" height="60" alt="Pokemon" />
+                    <v-img :src="require('../assets/logo.png')" height="60" alt="Pokemon" />
                     <v-card-title>Registro de usuario</v-card-title>
                     <v-card-text>
                         <v-form @submit.prevent="userRegistration">
@@ -18,9 +18,9 @@
                             </v-btn>
                         </v-form>
                     </v-card-text>
-                    <v-alert v-if="v$.emailUser.$error" type="error" variant="text">Error en la direccion de correo</v-alert>
+                    <v-alert v-if="v$.emailUser.$error" type="error" variant="text">Error en la dirección de correo</v-alert>
                     <v-alert v-if="v$.passUser.$error" type="error" variant="text">Error en la contraseña(mínimo 6 caracteres)</v-alert>
-                    <v-alert v-if="v$.confirm.$error" type="error" variant="text">La confirmación debe ser identica a la primer contraseña</v-alert>
+                    <v-alert v-if="v$.confirm.$error" type="error" variant="text">La confirmación debe ser idéntica a la primer contraseña</v-alert>
                     <v-alert v-if="errorMsg.show" type="error" variant="text">{{errorMsg.msg}}</v-alert>
                     <v-card-actions>
                         <RouterLink to="/login">Ir a inicio de sesión</RouterLink>
@@ -50,7 +50,7 @@ export default {
         async userRegistration() {
             const isFormCorrect = await this.v$.$validate();
             if(isFormCorrect){
-            createUserWithEmailAndPassword(auth, this.email, this.pass)
+            createUserWithEmailAndPassword(auth, this.emailUser, this.passUser)
                 .then(() => {
                     this.$router.replace('/home')
                 })
@@ -60,7 +60,7 @@ export default {
                 });
             }else{
                 this.errorMsg.show=true;
-                this.errorMsg.msg = "Llena los comapos con datos válidos";
+                this.errorMsg.msg = "Llena los campos con datos válidos";
             }
         }
     },

@@ -24,6 +24,13 @@
       </v-toolbar-items>
     </v-toolbar>
 
+    <v-toolbar :elevation="1" v-else>
+      <v-toolbar-title>
+        <v-img :src="require('../assets/pokemon.png')" height="60" alt="Pokemon" />
+      </v-toolbar-title>
+      <v-btn color="primary" variant="elevated" @click="toggleTheme">Modo oscuro</v-btn>
+    </v-toolbar>
+
     <v-layout>
       <v-navigation-drawer v-model="drawer" temporary>
         <v-list-item>
@@ -67,15 +74,15 @@ export default {
       this.$router.push({ name: 'home' })
     },
     logout() {
-      signOut(auth).then(()=> {
-          this.$router.replace('/login')
+      signOut(auth).then(() => {
+        this.$router.replace('/login')
       })
     },
 
   },
   setup() {
     const theme = useTheme()
-    
+
     return {
       theme,
       toggleTheme: () => theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
